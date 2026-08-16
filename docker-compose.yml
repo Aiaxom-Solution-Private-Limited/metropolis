@@ -1,0 +1,78 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: metropolis_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: metropolis
+      POSTGRES_PASSWORD: metropolis_pass
+      POSTGRES_DB: metropolis_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  minio:
+    image: minio/minio:latest
+    container_name: metropolis_minio
+    restart: always
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9004:9000"
+      - "9005:9001"
+    volumes:
+      - minio_data:/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: metropolis_backend
+    restart: always
+    ports:
+      - "5005:5000"
+    volumes:
+      - ./backend:/app
+      - ./frontend/public:/app/public:ro
+    environment:
+      - PORT=5000
+      - DATABASE_URL=postgresql+psycopg2://metropolis:metropolis_pass@postgres:5432/metropolis_db
+      - JWT_SECRET_KEY=metropolis_luxury_secret_key_2026_x89a
+      - JWT_ALGORITHM=HS256
+      - JWT_ACCESS_TOKEN_EXPIRE_MINUTES=1440
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_SECURE=False
+      - MINIO_BUCKET=metropolis-dental-assets
+      - INITIAL_ADMIN_EMAIL=metrodental123@gmail.com
+      - INITIAL_ADMIN_PASSWORD=Metro@admin321
+    depends_on:
+      - postgres
+      - minio
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: metropolis_frontend
+    restart: always
+    ports:
+      - "3005:3005"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:5005/api
+      - WATCHPACK_POLLING=true
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  minio_data:
