@@ -17,4 +17,5 @@ COPY . .
 
 EXPOSE 5000
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5000", "--reload"]
+# Production-safe entrypoint: binds to 0.0.0.0, dynamic $PORT (Render compatible), no --reload
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-5000}"]

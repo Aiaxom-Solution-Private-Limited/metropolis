@@ -3,9 +3,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.db.database import engine, Base, SessionLocal
+from app.db.database import SessionLocal
 from app.services.auth_service import seed_initial_admin
-from app.services.minio_service import minio_service
+from app.services.storage_service import storage_service
 from app.services.seeder import seed_initial_content
 from app.api.routes import auth, media, gallery, courses
 
@@ -15,11 +15,8 @@ logger = logging.getLogger("main")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup sequence
-    logger.info("Initializing database tables...")
-    Base.metadata.create_all(bind=engine)
-
-    logger.info("Ensuring MinIO bucket exists...")
-    minio_service.ensure_bucket_exists()
+    logger.info("Ensuring Supabase Storage bucket exists...")
+    storage_service.ensure_bucket_exists()
 
     logger.info("Seeding initial admin account & content...")
     db = SessionLocal()
@@ -42,10 +39,10 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
 )
 
-# CORS middleware for Next.js frontend
+# Environment-driven CORS middleware supporting local development and production domains
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

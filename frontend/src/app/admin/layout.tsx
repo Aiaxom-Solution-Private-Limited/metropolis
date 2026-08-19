@@ -14,6 +14,7 @@ import {
   Loader2,
   Menu,
   X,
+  Settings as SettingsIcon,
 } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -22,20 +23,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
+  useEffect(() => {
+    if (pathname !== "/admin/login" && !loading && !user) {
+      router.push("/admin/login");
+    }
+  }, [user, loading, router, pathname]);
+
   // Allow login page to render without layout sidebar
   if (pathname === "/admin/login") {
     return <>{children}</>;
   }
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push("/admin/login");
-    }
-  }, [user, loading, router]);
-
   if (loading || !user) {
     return (
-      <div className="min-h-screen bg-[#F8F9FB] flex flex-col items-center justify-center text-slate-800 font-sans">
+      <div className="min-h-screen bg-[#F8F9FB] flex flex-col items-center justify-center text-[#28395C] font-sans">
         <Loader2 className="w-8 h-8 text-[#28395C] animate-spin mb-3" />
         <p className="text-xs uppercase tracking-widest text-slate-500 font-mono">Loading Admin Workspace...</p>
       </div>
@@ -46,6 +47,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { label: "Gallery", href: "/admin/gallery", icon: ImageIcon },
     { label: "Courses", href: "/admin/courses", icon: BookOpen },
+    { label: "Settings", href: "/admin/settings", icon: SettingsIcon },
   ];
 
   return (

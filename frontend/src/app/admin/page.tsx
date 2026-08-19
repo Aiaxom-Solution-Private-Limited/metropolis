@@ -119,13 +119,13 @@ export default function AdminDashboardPage() {
           </h1>
 
           <p className="text-slate-500 text-sm leading-relaxed font-body">
-            Manage your clinic gallery assets and postgraduate training courses with automatic WebP server-side compression and MinIO object storage.
+            Manage your clinic gallery assets and postgraduate training courses with automatic WebP server-side compression and Supabase object storage.
           </p>
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
           <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-slate-600 text-xs font-mono">
-            FastAPI + MinIO Active
+            FastAPI + Supabase Active
           </div>
         </div>
       </div>
@@ -142,7 +142,7 @@ export default function AdminDashboardPage() {
               {loading ? "..." : galleryList.length}
             </h3>
             <p className="text-xs font-semibold text-slate-700 mt-1">Gallery Images</p>
-            <p className="text-[11px] text-slate-400 mt-0.5 font-mono">Images stored in MinIO</p>
+            <p className="text-[11px] text-slate-400 mt-0.5 font-mono">Images in Supabase</p>
           </div>
         </div>
 
@@ -184,7 +184,7 @@ export default function AdminDashboardPage() {
               {loading ? "..." : formattedStorage}
             </h3>
             <p className="text-xs font-semibold text-slate-700 mt-1">Media Storage</p>
-            <p className="text-[11px] text-slate-400 mt-0.5 font-mono">MinIO media storage</p>
+            <p className="text-[11px] text-slate-400 mt-0.5 font-mono">Supabase Storage</p>
           </div>
         </div>
       </div>
@@ -203,7 +203,7 @@ export default function AdminDashboardPage() {
                 </p>
               </div>
               <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
-                MinIO WebP
+                Supabase WebP
               </span>
             </div>
 

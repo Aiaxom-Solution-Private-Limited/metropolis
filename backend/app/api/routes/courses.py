@@ -7,7 +7,7 @@ from app.db.models.admin import Admin
 from app.schemas.course import CourseOut
 from app.schemas.gallery import ReorderItem
 from app.services.image_service import image_service
-from app.services.minio_service import minio_service
+from app.services.storage_service import storage_service
 from app.core.dependencies import get_current_admin
 
 router = APIRouter(tags=["Courses"])
@@ -20,7 +20,7 @@ def format_course_item(course: Course) -> dict:
         "duration": course.duration or "Intensive Masterclass",
         "description": course.description,
         "image_object_key": course.image_object_key,
-        "image_url": f"/api/media/{course.image_object_key}",
+        "image_url": storage_service.get_public_url(course.image_object_key),
         "is_active": course.is_active,
         "display_order": course.display_order or 0,
         "created_at": course.created_at,
@@ -82,7 +82,7 @@ async def create_course(
 
     object_key = f"courses/{new_filename}"
 
-    minio_service.upload_bytes(
+    storage_service.upload_bytes(
         object_key=object_key,
         data=processed_bytes,
         content_type=mime_type
@@ -157,7 +157,7 @@ async def update_course(
             )
             new_object_key = f"courses/{new_filename}"
 
-            minio_service.upload_bytes(
+            storage_service.upload_bytes(
                 object_key=new_object_key,
                 data=processed_bytes,
                 content_type=mime_type
@@ -165,7 +165,7 @@ async def update_course(
 
             old_object_key = course.image_object_key
             course.image_object_key = new_object_key
-            minio_service.delete_object(old_object_key)
+            storage_service.delete_object(old_object_key)
 
     db.commit()
     db.refresh(course)
@@ -184,7 +184,7 @@ def delete_course(
             detail="Course not found."
         )
 
-    minio_service.delete_object(course.image_object_key)
+    storage_service.delete_object(course.image_object_key)
     db.delete(course)
     db.commit()
     return None

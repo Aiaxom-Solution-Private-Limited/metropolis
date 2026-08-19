@@ -381,7 +381,7 @@ export default function AdminGalleryPage() {
                 Drag & Drop image here, or <span className="underline">browse</span>
               </p>
               <p className="text-[11px] text-slate-500 mt-0.5 font-mono">
-                JPG, PNG, WebP (Max: 15MB) — Auto-compressed to WebP in MinIO
+                JPG, PNG, WebP (Max: 15MB) — Auto-compressed to WebP in Supabase Storage
               </p>
               <input
                 type="file"
@@ -403,7 +403,7 @@ export default function AdminGalleryPage() {
               {uploading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Processing WebP & MinIO...</span>
+                  <span>Processing WebP & Supabase...</span>
                 </>
               ) : (
                 <>
@@ -675,7 +675,7 @@ export default function AdminGalleryPage() {
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed">
-              Are you sure you want to delete <strong className="text-slate-900">{deleteTarget.title || deleteTarget.original_filename}</strong> from PostgreSQL and MinIO?
+              Are you sure you want to delete <strong className="text-slate-900">{deleteTarget.title || deleteTarget.original_filename}</strong> from PostgreSQL and Supabase Storage?
             </p>
 
             <div className="flex justify-end gap-3 pt-2">

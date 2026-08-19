@@ -471,7 +471,7 @@ export default function AdminCoursesPage() {
                     <label className="cursor-pointer py-4 flex flex-col items-center">
                       <UploadCloud className="w-7 h-7 text-slate-600 mb-1" />
                       <span className="text-xs font-semibold text-slate-800">Select course cover image</span>
-                      <span className="text-[10px] text-slate-500 mt-0.5 font-mono">WebP Auto-Compressed to MinIO</span>
+                      <span className="text-[10px] text-slate-500 mt-0.5 font-mono">WebP Auto-Compressed to Supabase</span>
                       <input
                         type="file"
                         accept="image/*"

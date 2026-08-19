@@ -6,7 +6,7 @@ from app.db.models.gallery import GalleryImage
 from app.db.models.admin import Admin
 from app.schemas.gallery import GalleryImageOut, ReorderItem
 from app.services.image_service import image_service
-from app.services.minio_service import minio_service
+from app.services.storage_service import storage_service
 from app.core.dependencies import get_current_admin
 
 router = APIRouter(tags=["Gallery"])
@@ -22,7 +22,7 @@ def format_gallery_item(img: GalleryImage) -> dict:
         "mime_type": img.mime_type,
         "file_size": img.file_size,
         "display_order": img.display_order or 0,
-        "url": f"/api/media/{img.object_key}",
+        "url": storage_service.get_public_url(img.object_key),
         "created_at": img.created_at,
     }
 
@@ -65,7 +65,7 @@ async def upload_gallery_image(
 
     object_key = f"gallery/{new_filename}"
 
-    minio_service.upload_bytes(
+    storage_service.upload_bytes(
         object_key=object_key,
         data=processed_bytes,
         content_type=mime_type
@@ -132,14 +132,14 @@ async def update_gallery_image(
                 content_type=file.content_type or "image/jpeg"
             )
             new_object_key = f"gallery/{new_filename}"
-            minio_service.upload_bytes(object_key=new_object_key, data=processed_bytes, content_type=mime_type)
+            storage_service.upload_bytes(object_key=new_object_key, data=processed_bytes, content_type=mime_type)
 
             old_key = img.object_key
             img.object_key = new_object_key
             img.mime_type = mime_type
             img.file_size = file_size
             img.original_filename = file.filename
-            minio_service.delete_object(old_key)
+            storage_service.delete_object(old_key)
 
     db.commit()
     db.refresh(img)
@@ -158,7 +158,7 @@ def delete_gallery_image(
             detail="Gallery image not found."
         )
 
-    minio_service.delete_object(db_image.object_key)
+    storage_service.delete_object(db_image.object_key)
     db.delete(db_image)
     db.commit()
     return None

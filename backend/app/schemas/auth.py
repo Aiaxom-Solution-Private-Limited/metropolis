@@ -16,3 +16,9 @@ class AdminUserOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class UpdateProfileRequest(BaseModel):
+    email: EmailStr | None = None
+    current_password: str
+    new_password: str | None = None
+

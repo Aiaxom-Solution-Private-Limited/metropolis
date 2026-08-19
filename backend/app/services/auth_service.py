@@ -8,21 +8,20 @@ logger = logging.getLogger("auth_service")
 
 def seed_initial_admin(db: Session):
     try:
-        admin_email = settings.INITIAL_ADMIN_EMAIL
-        existing_admin = db.query(Admin).filter(Admin.email == admin_email).first()
-        
-        if not existing_admin:
-            hashed_pwd = get_password_hash(settings.INITIAL_ADMIN_PASSWORD)
+        admin_count = db.query(Admin).count()
+        if admin_count == 0:
+            default_email = "metrodental123@gmail.com"
+            default_pwd = "Metro@admin321"
+            hashed_pwd = get_password_hash(default_pwd)
             new_admin = Admin(
-                email=admin_email,
+                email=default_email,
                 hashed_password=hashed_pwd,
             )
             db.add(new_admin)
             db.commit()
-            db.refresh(new_admin)
-            logger.info(f"Initial admin '{admin_email}' seeded successfully with bcrypt password hash.")
+            logger.info(f"Initial admin '{default_email}' seeded successfully with bcrypt password hash.")
         else:
-            logger.info(f"Initial admin '{admin_email}' already exists.")
+            logger.info("Admin account already exists in database.")
     except Exception as e:
         db.rollback()
         logger.error(f"Error seeding initial admin: {e}")
