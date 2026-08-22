@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Calendar, User, Phone, Mail, CheckCircle2, Shield, Clock3, MessageSquare, AlertCircle, ArrowRight } from "lucide-react";
+import { X, Calendar, User, Phone, Mail, CheckCircle2, Shield, Clock3, MessageSquare, AlertCircle, ArrowRight, Loader2 } from "lucide-react";
+import { API_BASE } from "@/lib/api";
 
 interface AppointmentModalProps {
   isOpen: boolean;
@@ -23,6 +24,8 @@ export default function AppointmentModal({ isOpen, onClose }: AppointmentModalPr
 
   const [phoneError, setPhoneError] = useState("");
   const [dateError, setDateError] = useState("");
+  const [apiError, setApiError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   // Mobile validation helper
@@ -59,7 +62,7 @@ export default function AppointmentModal({ isOpen, onClose }: AppointmentModalPr
     if (dateError) setDateError(validateDate(val));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const pErr = validatePhone(formData.phone);
     const dErr = validateDate(formData.preferredDate);
@@ -69,9 +72,41 @@ export default function AppointmentModal({ isOpen, onClose }: AppointmentModalPr
       setDateError(dErr);
       return;
     }
+
     setPhoneError("");
     setDateError("");
-    setIsSuccess(true);
+    setApiError("");
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch(`${API_BASE}/appointments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          patientName: formData.patientName,
+          phone: formData.phone,
+          email: formData.email,
+          preferredDate: formData.preferredDate,
+          preferredTime: formData.timeSlot,
+          notes: formData.notes,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        setApiError(data.detail || data.message || "Failed to submit appointment request. Please try again.");
+        return;
+      }
+
+      setIsSuccess(true);
+    } catch (err: any) {
+      setApiError(err.message || "Network error. Please check your connection and try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -86,7 +121,7 @@ export default function AppointmentModal({ isOpen, onClose }: AppointmentModalPr
         onClick={onClose}
       />
 
-      {/* Modal Card (Enlarged & Minimal Aesthetic) */}
+      {/* Modal Card */}
       <div
         className={`relative z-10 w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl overflow-hidden border border-slate-100 transition-transform duration-300 ${
           isOpen ? "scale-100" : "scale-95"
@@ -120,7 +155,7 @@ export default function AppointmentModal({ isOpen, onClose }: AppointmentModalPr
               </div>
               <h4 className="text-2xl font-light text-slate-900">Appointment Request Submitted!</h4>
               <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed font-body">
-                Thank you, <strong className="text-slate-900 font-semibold">{formData.patientName}</strong>. We have logged your request for <strong className="text-slate-900 font-semibold">{formData.preferredDate}</strong> ({formData.timeSlot}). Our clinical team will contact <strong className="text-slate-900 font-semibold">{formData.phone}</strong> shortly.
+                Your appointment request has been submitted successfully. We will contact you once your appointment is confirmed.
               </p>
               <button
                 onClick={() => {
@@ -134,7 +169,13 @@ export default function AppointmentModal({ isOpen, onClose }: AppointmentModalPr
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
-              
+              {apiError && (
+                <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2 font-medium">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+                  <span>{apiError}</span>
+                </div>
+              )}
+
               {/* Patient Full Name (Required) */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-slate-700 mb-2">
@@ -200,7 +241,7 @@ export default function AppointmentModal({ isOpen, onClose }: AppointmentModalPr
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                {/* Preferred Date (Datepicker, disable past dates + validation) */}
+                {/* Preferred Date */}
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-widest text-slate-700 mb-2">
                     Preferred Date <span className="text-rose-500">*</span>
@@ -227,7 +268,7 @@ export default function AppointmentModal({ isOpen, onClose }: AppointmentModalPr
                   )}
                 </div>
 
-                {/* Preferred Time Slot (Dropdown based on clinic hours) */}
+                {/* Preferred Time Slot */}
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-widest text-slate-700 mb-2">
                     Preferred Time Slot <span className="text-rose-500">*</span>
@@ -249,7 +290,7 @@ export default function AppointmentModal({ isOpen, onClose }: AppointmentModalPr
                 </div>
               </div>
 
-              {/* Service Required / Notes (Optional text area) */}
+              {/* Service Required / Notes */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-slate-700 mb-2">
                   Service Required / Notes <span className="text-slate-400 font-normal lowercase">(optional)</span>
@@ -269,11 +310,21 @@ export default function AppointmentModal({ isOpen, onClose }: AppointmentModalPr
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full py-4 rounded-2xl bg-[#28395C] hover:bg-slate-900 text-white font-semibold text-base transition-all duration-300 shadow-xl shadow-[#28395C]/20 flex items-center justify-center gap-2.5 mt-4 cursor-pointer group active:scale-[0.99]"
+                disabled={isSubmitting}
+                className="w-full py-4 rounded-2xl bg-[#28395C] hover:bg-slate-900 disabled:opacity-60 text-white font-semibold text-base transition-all duration-300 shadow-xl shadow-[#28395C]/20 flex items-center justify-center gap-2.5 mt-4 cursor-pointer group active:scale-[0.99]"
               >
-                <Calendar className="w-5 h-5 text-[#60A5FA]" />
-                <span>Confirm Appointment Request</span>
-                <ArrowRight className="w-4 h-4 text-slate-300 group-hover:translate-x-1 transition-transform" />
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin text-[#60A5FA]" />
+                    <span>Submitting Request...</span>
+                  </>
+                ) : (
+                  <>
+                    <Calendar className="w-5 h-5 text-[#60A5FA]" />
+                    <span>Confirm Appointment Request</span>
+                    <ArrowRight className="w-4 h-4 text-slate-300 group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
               </button>
             </form>
           )}
@@ -282,4 +333,3 @@ export default function AppointmentModal({ isOpen, onClose }: AppointmentModalPr
     </div>
   );
 }
-

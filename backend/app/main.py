@@ -8,7 +8,7 @@ from app.db.database import SessionLocal
 from app.services.auth_service import seed_initial_admin
 from app.services.storage_service import storage_service
 from app.services.seeder import seed_initial_content
-from app.api.routes import auth, media, gallery, courses
+from app.api.routes import auth, media, gallery, courses, appointments
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("main")
@@ -54,6 +54,8 @@ app.include_router(auth.router, prefix="/api")
 app.include_router(media.router, prefix="/api")
 app.include_router(gallery.router, prefix="/api")
 app.include_router(courses.router, prefix="/api")
+app.include_router(appointments.router, prefix="/api")
+
 
 @app.get("/api/health")
 def health_check():

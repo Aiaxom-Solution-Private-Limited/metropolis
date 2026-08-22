@@ -20,6 +20,12 @@ class Settings(BaseSettings):
     SUPABASE_SERVICE_ROLE_KEY: str = ""
     SUPABASE_STORAGE_BUCKET: str = "metropolis-assets"
 
+    # Google Apps Script Web App Integration
+    GOOGLE_APPS_SCRIPT_URL: str = ""
+    GOOGLE_APPS_SCRIPT_SECRET: str = ""
+
+
+
     @property
     def cors_origins_list(self) -> list[str]:
         if isinstance(self.CORS_ORIGINS, list):
