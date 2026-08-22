@@ -1,8 +1,7 @@
 import logging
 from sqlalchemy.orm import Session
 from app.db.models.admin import Admin
-from app.core.config import settings
-from app.core.security import get_password_hash, verify_password, create_access_token
+from app.core.security import get_password_hash, verify_password
 
 logger = logging.getLogger("auth_service")
 
@@ -10,8 +9,8 @@ def seed_initial_admin(db: Session):
     try:
         admin_count = db.query(Admin).count()
         if admin_count == 0:
-            default_email = "metrodental123@gmail.com"
-            default_pwd = "Metro@admin321"
+            default_email = "admin"
+            default_pwd = "Metrodental@admin321"
             hashed_pwd = get_password_hash(default_pwd)
             new_admin = Admin(
                 email=default_email,

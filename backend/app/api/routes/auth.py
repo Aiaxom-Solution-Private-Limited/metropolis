@@ -6,10 +6,11 @@ from app.schemas.auth import LoginRequest, TokenResponse, AdminUserOut, UpdatePr
 from app.services.auth_service import authenticate_admin
 from app.core.security import create_access_token, verify_password, get_password_hash
 from app.core.dependencies import get_current_admin
+from app.core.rate_limiter import admin_auth_rate_limiter
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login", response_model=TokenResponse, dependencies=[Depends(admin_auth_rate_limiter)])
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
     admin = authenticate_admin(db, email=payload.email, password=payload.password)
     if not admin:
@@ -58,4 +59,3 @@ def update_profile(
     db.commit()
     db.refresh(current_admin)
     return current_admin
-
