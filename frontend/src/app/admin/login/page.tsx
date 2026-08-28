@@ -37,8 +37,8 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md bg-white border border-slate-200/80 rounded-3xl p-8 sm:p-10 shadow-xl relative z-10">
         {/* Header Branding */}
         <div className="flex flex-col items-center text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-[#28395C] p-0.5 shadow-md mb-4 flex items-center justify-center">
-            <Shield className="w-7 h-7 text-white" />
+          <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200/80 p-1.5 shadow-md mb-4 flex items-center justify-center overflow-hidden">
+            <img src="/logo.png" alt="Metropolis Dental Logo" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Metropolis Admin</h1>
           <p className="text-xs text-slate-500 mt-1 uppercase tracking-widest font-mono">

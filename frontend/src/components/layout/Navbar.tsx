@@ -140,10 +140,8 @@ export default function Navbar({ onOpenBookingModal }: NavbarProps) {
           
           {/* Logo (Top-Left Corner) */}
           <a href="/" className="group flex items-center gap-3 shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-[#28395C] p-0.5 shadow-md group-hover:scale-105 transition-transform duration-300">
-              <div className="w-full h-full bg-white rounded-[10px] flex items-center justify-center">
-                <Shield className="w-5 h-5 text-[#28395C]" />
-              </div>
+            <div className="w-10 h-10 rounded-xl bg-white p-1 shadow-md border border-slate-200/80 group-hover:scale-105 transition-transform duration-300 flex items-center justify-center overflow-hidden">
+              <img src="/logo.png" alt="Metropolis Dental Logo" className="w-full h-full object-contain" />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-bold tracking-wider text-slate-900 drop-shadow-sm">METROPOLIS</span>
@@ -288,10 +286,8 @@ export default function Navbar({ onOpenBookingModal }: NavbarProps) {
             {/* Drawer Top Header (Title & Logo on left) */}
             <div className="flex items-center justify-between pb-8 border-b border-white/15 pt-2">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-white/15 backdrop-blur-md p-0.5 border border-white/25 shadow-md">
-                  <div className="w-full h-full bg-[#28395C] rounded-[14px] flex items-center justify-center">
-                    <Shield className="w-5 h-5 text-white" />
-                  </div>
+                <div className="w-11 h-11 rounded-2xl bg-white p-1 shadow-md border border-white/30 flex items-center justify-center overflow-hidden shrink-0">
+                  <img src="/logo.png" alt="Metropolis Dental Logo" className="w-full h-full object-contain" />
                 </div>
                 <div>
                   <h3 className="text-xs font-bold tracking-wider text-white drop-shadow-sm">METROPOLIS DENTAL</h3>
